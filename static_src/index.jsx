@@ -14,7 +14,6 @@ const MessageButton = (props) => {
 
 function sendMessage(){
     messages.push('Muy bien!');
-    //alert(messages);
     ReactDOM.render(
         <div>
             <MessageField messages={ messages } />

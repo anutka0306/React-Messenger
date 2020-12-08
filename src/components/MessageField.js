@@ -5,7 +5,7 @@ export default class MessageField extends React.Component{
 
     state = {
       messages: ["Hello", "How are you?"],
-        answers : ["HI! I am Robot", "I'll be back", "How was your day?", "Do you like ice-cream?","Where are you from?"],
+        answers : ["HI! I am Robot", "I'll be back", "How was your day?", "Do you like ice-cream?","Where are you from?", "See you later"],
     };
 
     handleClick = () =>{

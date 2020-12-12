@@ -1,6 +1,8 @@
 import React from 'react';
 import Child from "./Child";
 import MessageField from "./MessageField";
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import Layout from "./Layout";
 
 export default class App extends React.Component{
     state = {
@@ -26,7 +28,10 @@ export default class App extends React.Component{
     render() {
         console.log("Render");
         return (
-            <MessageField />
+            <MuiThemeProvider>
+                <Layout />
+            </MuiThemeProvider>
+
         );
     }
 }

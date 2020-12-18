@@ -1,69 +1,105 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {TextField, FloatingActionButton} from "material-ui";
 import SendIcon from 'material-ui/svg-icons/content/send';
 import Message from "./Message";
 
 
 export default class MessageField extends React.Component{
+    static propTypes = {
+        chatId: PropTypes.number.isRequired,
+    };
+
+    state = {
+       chats:{
+           1: {title: 'Чат 1', messageList: [1]},
+           2: {title: 'Чат 2', messageList: [2]},
+           3: {title: 'Чат 3', messageList: [3]},
+           4: {title: 'Чат 4', messageList: [4]},
+
+       },
+       messages: {
+           1: { text: "Привет!", sender: "Robot" },
+           2: { text: "Здравствуйте!", sender: "Robot" },
+           3: {text: "Hola", sender: "Robot"},
+           4: {text: "Hi", sender: "Robot"},
+
+       },
+        input: '',
+    };
+
     constructor(props) {
         super(props);
         this.textInput = React.createRef();
     }
 
-    state = {
-        messages:[{text: "HI! I am Robot", sender:"Robot"}],
-        answers : [{text: "HI! I am Robot", sender:"Robot"}, {text: "I'll be back", sender:"Robot"},{text: "How was your day?", sender:"Robot"}, {text: "Do you like ice-cream?", sender:"Robot"}, {text: "Where are you from?", sender:"Robot"} ],
-        input:'',
-    };
 
     componentDidMount() {
         this.textInput.current.focus();
     }
 
     handleClick = (message) =>{
-        this.sendMessage(message);
+        this.handleSendMessage(this.state.input, 'User');
     };
 
     handleChange = (event) =>{
-        this.setState({input: event.target.value});
+        this.setState({[event.target.name]: event.target.value});
     };
 
     handleKeyUp = (event, message) =>{
         if(event.keyCode === 13){
-            this.sendMessage(message);
+            this.handleSendMessage(this.state.input, 'User');
         }
     };
 
-    sendMessage = (message) =>{
-        this.setState(
-            {
-                messages:[...this.state.messages, {text: message, sender: "User"}],
-                input:'',
-            }
-            );
-    }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if(this.state.messages[this.state.messages.length - 1].sender === "User"){
-            let rand = Math.floor(Math.random() * this.state.answers.length);
+        const { messages } = this.state;
+        if(Object.keys(prevState.messages).length < Object.keys(messages).length && Object.values(messages)[Object.values(messages).length -1].sender === "User"){
             setTimeout(() =>
-                this.setState({messages: [...this.state.messages, this.state.answers[rand]]}),
-                    1000
-            );
+            this.handleSendMessage("Message", "Robot"), 1000);
         }
     }
 
-    render() {
-        const messageElements = this.state.messages.map((message, index) => (
-            <Message text={message.text} author={message.sender} key={index}/>
-        ));
+    handleSendMessage(message, sender){
+        const {messages, chats, input} = this.state;
+        const { chatId } = this.props;
+        if(input.length > 0 || sender === "Robot"){
+            const messageId = Object.keys(messages).length + 1;
+            this.setState({
+                messages: {...messages,
+                [messageId]: {text: message, sender:sender}},
+                chats: {...chats,
+                [chatId]: {...chats[chatId],
+                messageList: [...chats[chatId]['messageList'], messageId]}},
+            })
+        }
+        if(sender === "User"){
+            this.setState({input: ''});
+        }
+    };
 
-        return (
-            <div className='layout'>
+    render() {
+        const { messages, chats } = this.state;
+        let { chatId } = this.props;
+        if(chats[chatId] === undefined){
+            chatId = 1;
+
+        }
+        const messageElements = chats[chatId].messageList.map((messageId, index) => (
+            <Message
+                key={ index }
+                text={ messages[messageId].text }
+                sender={ messages[messageId].sender }
+            />));
+
+
+
+        return [
+
                 <div className='message-field'>
                     {messageElements}
-
-                </div>
+                </div>,
                 <div style={ { width: '100%', display: 'flex' } }>
                     <TextField
                         name="input"
@@ -80,7 +116,8 @@ export default class MessageField extends React.Component{
                     </FloatingActionButton>
                 </div>
 
-            </div>);
+
+        ];
     }
 
 }

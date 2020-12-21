@@ -7,7 +7,7 @@ import connect from "react-redux/es/connect/connect";
 
 class Profile extends React.Component{
     static propTypes = {
-        name: PropTypes.string.isRequired,
+        user: PropTypes.object.isRequired,
     };
 
     render() {
@@ -15,7 +15,7 @@ class Profile extends React.Component{
             <div className='main-layout'>
                 <div className='content-wrapper'>
                     <h3>Profile</h3>
-                    <User name={this.props.name}/>
+                    <User name={this.props.user.name}/>
                 </div>
             </div>
         );

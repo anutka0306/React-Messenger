@@ -12,41 +12,23 @@ class Layout extends React.Component{
     static propTypes = {
         chatId: PropTypes.number,
         sendMessage:PropTypes.func.isRequired,
+        messages: PropTypes.object.isRequired,
     };
 
     static defaultProps = {
       chatId: 1,
     };
 
-    state = {
-        messages: {
-            1: { text: "Привет!", sender: "Robot" },
-            2: { text: "Здравствуйте!", sender: "Robot" },
-            3: {text: "Hola", sender: "Robot"},
-            4: {text: "Hi", sender: "Robot"},
 
-        },
-    };
 
-    componentDidUpdate(prevProps, prevState) {
-        const { messages } = this.state;
-        if (Object.keys(prevState.messages).length < Object.keys(messages).length &&
-            Object.values(messages)[Object.values(messages).length - 1].sender === 'User') {
-            setTimeout(() =>
-                this.sendMessage('Не приставай ко мне, я робот!', 'Robot'), 1000);
-        }
-    }
 
-    sendMessage = (message, sender) => {
-        const { messages } = this.state;
-        const { chatId } = this.props;
 
-        const messageId = Object.keys(messages).length + 1;
-        this.setState({
-            messages: {...messages,
-                [messageId]: {text: message, sender: sender}},
+    handleSendMessage = (messageId, message, sender, chatId) => {
 
-        });
+        console.log(Object.keys(this.props.messages).length);
+        console.log(messageId);
+        console.log(messageId);
+
         this.props.sendMessage(messageId, message, sender, chatId);
     };
 
@@ -60,8 +42,8 @@ class Layout extends React.Component{
                 <div className='content-wrapper'>
                     <MessageField
                         chatId={this.props.chatId}
-                        messages={this.state.messages}
-                        sendMessage={this.sendMessage}
+                        messages={this.props.messages}
+                        sendMessage={this.handleSendMessage}
                     />
                     <ChatList/>
                 </div>
@@ -70,7 +52,9 @@ class Layout extends React.Component{
     }
 }
 
-const mapStateToProps = ({}) => ({});
+const mapStateToProps = ({messageReducer}) =>({
+    messages: messageReducer.messages,
+});
 const mapDispatchToProps = dispatch => bindActionCreators({sendMessage}, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Layout);
